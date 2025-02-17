@@ -201,12 +201,14 @@ cat <<HST > /etc/hosts
 HST
 
 # mkinitcpio: add encrypt + lvm2
-sed -i 's/^HOOKS=.*/HOOKS=(base udev autodetect modconf block keymap encrypt lvm2 filesystems keyboard fsck)/' /etc/mkinitcpio.conf
+sed -i 's/^HOOKS=.*/HOOKS=(base udev modconf block keymap encrypt lvm2 filesystems keyboard fsck)/' /etc/mkinitcpio.conf
+
 mkinitcpio -P
 
 # GRUB installation (UEFI)
 grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=GRUB
 sed -i 's|^GRUB_CMDLINE_LINUX=.*|GRUB_CMDLINE_LINUX="cryptdevice=UUID=$(blkid -s UUID -o value $CRYPT_PART):cryptlvm root=/dev/myvg/lv_root"|g' /etc/default/grub
+
 
 if [ -f "$GRUB_BG_DEST" ]; then
   echo "GRUB_BACKGROUND=\"$GRUB_BG_DEST\"" >> /etc/default/grub

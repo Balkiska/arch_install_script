@@ -44,10 +44,9 @@ ____________¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶11__________
 1¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶1
 __¶¶111111111¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶111111111¶__
 
+COFFEE
 
 echo -e "•*• Enjoy a coffee while your specs are being installed ! •*•"
-
-COFFEE
 
 # ------------------------------------------------------------------------------
 # 1. USER-CONFIGURABLE VARIABLES
@@ -55,8 +54,8 @@ COFFEE
 DISK="/dev/sda"           # Target disk
 HOSTNAME="arch-cats-grub"
 
-USERNAME1="user1"         # first user (the son of my college)
-USERNAME2="user2"         # second user (my collegue)
+USERNAME1="user1"         # first user
+USERNAME2="user2"         # second user
 
 PASSWORD="azerty123"      # Default password (hashed + forced change)
 TIMEZONE="Europe/Paris"   
@@ -104,7 +103,7 @@ info "Wiping and partitioning $DISK"
 sgdisk --zap-all "$DISK"
 parted -s "$DISK" mklabel gpt
 
-# EFI partition 
+# EFI partition
 parted -s "$DISK" mkpart ESP fat32 1MiB 551MiB
 parted -s "$DISK" set 1 boot on
 
@@ -181,6 +180,9 @@ info "Generating fstab..."
 genfstab -U /mnt >> /mnt/etc/fstab
 
 info "Preparing chroot script..."
+# Ensure /mnt/tmp exists before writing
+mkdir -p /mnt/tmp
+
 cat << EOF > /mnt/tmp/chroot-setup.sh
 #!/usr/bin/env bash
 set -e
@@ -292,7 +294,7 @@ arch-chroot /mnt /tmp/chroot-setup.sh
 rm /mnt/tmp/chroot-setup.sh || true
 
 # ------------------------------------------------------------------------------
-# 11. CREATE SECONDARY LUKS (10 GB) FOR MANUAL MOUNT
+# 11. CREATE SECONDARY LUKS (5 GB) FOR MANUAL MOUNT
 # ------------------------------------------------------------------------------
 info "Creating secondary LUKS on lv_secret..."
 echo "$PASSWORD" | cryptsetup luksFormat /dev/myvg/lv_secret -
@@ -302,3 +304,4 @@ echo "$PASSWORD" | cryptsetup luksFormat /dev/myvg/lv_secret -
 # DONE
 # ------------------------------------------------------------------------------
 info "Installation complete! Unmount, reboot, and enjoy your environment."
+

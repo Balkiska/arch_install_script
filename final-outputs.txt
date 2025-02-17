@@ -1,0 +1,13 @@
+NAME                 FSTYPE      FSVER            LABEL       UUID                                   FSAVAIL FSUSE% MOUNTPOINTS
+loop0                squashfs    4.0                                                                       0   100% /run/archiso/airootfs
+sda                                                                                                                 
+├─sda1               vfat        FAT32                        5223-7370                               548.9M     0% /mnt/boot/efi
+└─sda2               crypto_LUKS 2                            afae2806-ff13-454f-a789-dfa161dd41bb                  
+  └─cryptlvm         LVM2_member LVM2 001                     wpFPKf-MzS0-EJj2-c9xm-hpUq-2u62-jORt1j                
+    ├─myvg-lv_root   ext4        1.0                          6ecefa0f-2212-4afb-bdaf-62f42d81677c      6.6G    27% /mnt
+    ├─myvg-lv_swap   swap        1                            07a5ef30-d708-4c16-bf5f-48126a829e3f                  [SWAP]
+    ├─myvg-lv_home   ext4        1.0                          97cb19e6-b2a3-4f95-9fd2-b5ca21daf4ca      7.4G     0% /mnt/home
+    ├─myvg-lv_vbox   ext4        1.0                          04f7121c-6b01-459b-a4ed-968c4f45881c      4.6G     0% /mnt/var/vbox
+    ├─myvg-lv_shared ext4        1.0                          b212e655-cd42-4548-bdcb-ce2eac94636c      2.7G     0% /mnt/shared
+    └─myvg-lv_secret                                                                                                
+sr0                  iso9660     Joliet Extension ARCH_202502 2025-02-01-08-29-13-00                       0   100% /run/archiso/bootmnt

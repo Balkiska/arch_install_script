@@ -64,12 +64,12 @@ LANGUAGE="fr_FR.UTF-8"
 KEYMAP="fr"               
 
 # LVM volume sizes
-LV_ROOT_SIZE="20G"
-LV_SWAP_SIZE="4G"
-LV_HOME_SIZE="15G"
-LV_VBOX_SIZE="10G"
-LV_SHARED_SIZE="5G"
-LV_SECRET_SIZE="10G"
+LV_ROOT_SIZE="10G"
+LV_SWAP_SIZE="2G"
+LV_HOME_SIZE="8G"
+LV_VBOX_SIZE="5G"
+LV_SHARED_SIZE="3G"
+LV_SECRET_SIZE="5G"
 
 # Path to the image for GRUB background
 GRUB_BG_PATH="/root/cats-bg.png"

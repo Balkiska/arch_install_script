@@ -45,7 +45,7 @@ ____________¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶11__________
 __¶¶111111111¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶111111111¶__
 
 
-echo -e "•*• Profitez d'un café pendant l'installation de votre Arch en français ! •*•"
+echo -e "•*• Enjoy a coffee while your specs are being installed ! •*•"
 
 COFFEE
 

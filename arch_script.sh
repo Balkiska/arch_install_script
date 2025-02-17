@@ -1,15 +1,14 @@
 #!/usr/bin/env bash
 #
 # Example Arch Linux installation script 
-# This version is tuned for a French environment: 
+# Tuned for a French environment
 
 set -euo pipefail
 
 # ------------------------------------------------------------------------------
 # 0. CUTE ASCII COFFEE ART + INITIAL MESSAGE
 # ------------------------------------------------------------------------------
-cat << "COFFEE"
-
+cat <<COFFEE
 __________________¶¶¶____¶¶¶____1¶¶1______________
 ___________________¶¶¶____¶¶¶____¶¶¶______________
 ___________________¶¶¶____¶¶¶____¶¶¶______________
@@ -43,7 +42,6 @@ ____________¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶11__________
 11_____________________________________________111
 1¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶1
 __¶¶111111111¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶¶111111111¶__
-
 COFFEE
 
 echo -e "•*• Enjoy a coffee while your specs are being installed ! •*•"
@@ -174,16 +172,13 @@ pacstrap /mnt base base-devel linux linux-firmware linux-headers vim nano sudo g
   grub efibootmgr networkmanager wget curl openssl
 
 # ------------------------------------------------------------------------------
-# 9. GENERATE FSTAB & CHROOT CONFIG
+# 9. GENERATE FSTAB & PREPARE CHROOT SCRIPT
 # ------------------------------------------------------------------------------
 info "Generating fstab..."
 genfstab -U /mnt >> /mnt/etc/fstab
 
 info "Preparing chroot script..."
-# Ensure /mnt/tmp exists before writing
-mkdir -p /mnt/tmp
-
-cat << EOF > /mnt/tmp/chroot-setup.sh
+cat <<EOF > /mnt/root/chroot-setup.sh
 #!/usr/bin/env bash
 set -e
 
@@ -199,7 +194,7 @@ echo "KEYMAP=$KEYMAP" > /etc/vconsole.conf
 
 # Hostname
 echo "$HOSTNAME" > /etc/hostname
-cat << HST > /etc/hosts
+cat <<HST > /etc/hosts
 127.0.0.1   localhost
 ::1         localhost
 127.0.1.1   $HOSTNAME.localdomain $HOSTNAME
@@ -211,10 +206,8 @@ mkinitcpio -P
 
 # GRUB installation (UEFI)
 grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=GRUB
-# Add cryptdevice argument
 sed -i 's|^GRUB_CMDLINE_LINUX=.*|GRUB_CMDLINE_LINUX="cryptdevice=UUID=$(blkid -s UUID -o value $CRYPT_PART):cryptlvm root=/dev/myvg/lv_root"|g' /etc/default/grub
 
-# If the cat image is present, set it as GRUB background
 if [ -f "$GRUB_BG_DEST" ]; then
   echo "GRUB_BACKGROUND=\"$GRUB_BG_DEST\"" >> /etc/default/grub
 fi
@@ -225,13 +218,13 @@ grub-mkconfig -o /boot/grub/grub.cfg
 systemctl enable NetworkManager
 
 # ------------------------------------------------------------------------------
-# Add environment variables (COLORTHERM, THERM)
+# Add environment variables
 # ------------------------------------------------------------------------------
 echo "export COLORTHERM=1" >> /etc/profile
 echo "export THERM=1" >> /etc/profile
 
 # ------------------------------------------------------------------------------
-# Install additional packages: mail, VirtualBox, etc.
+# Install additional packages
 # ------------------------------------------------------------------------------
 pacman -S --noconfirm \
   mailutils \
@@ -268,7 +261,7 @@ echo 'export HISTFILE=~/.bash_history_C' >> /home/$USERNAME1/.bashrc
 # Simple Hyprland config for user2 (example)
 # ------------------------------------------------------------------------------
 mkdir -p /home/$USERNAME2/.config/hypr
-cat << HYPRCFG > /home/$USERNAME2/.config/hypr/hyprland.conf
+cat <<HYPRCFG > /home/$USERNAME2/.config/hypr/hyprland.conf
 # Minimal Hyprland config example
 monitor=,1920x1080,0x0,1
 exec=waybar
@@ -277,9 +270,14 @@ chown -R $USERNAME2:$USERNAME2 /home/$USERNAME2/.config
 
 EOF
 
-chmod +x /mnt/tmp/chroot-setup.sh
+# --- Fin du bloc EOF ---
+# (Ligne vide pour que GitHub “respire”)
 
-# Copy the image into the new system if present
+chmod +x /mnt/root/chroot-setup.sh
+
+# ------------------------------------------------------------------------------
+# (Optionnel) Copier l'image de fond GRUB si présente
+# ------------------------------------------------------------------------------
 if [ -f "$GRUB_BG_PATH" ]; then
   info "Copying cat image to /mnt/boot/grub/cats-bg.png"
   mkdir -p /mnt/boot/grub
@@ -290,18 +288,18 @@ fi
 # 10. CHROOT & RUN SETUP
 # ------------------------------------------------------------------------------
 info "Entering chroot to finalize configuration..."
-arch-chroot /mnt /tmp/chroot-setup.sh
-rm /mnt/tmp/chroot-setup.sh || true
+arch-chroot /mnt /root/chroot-setup.sh
+
+# Nettoyage du script chroot
+rm /mnt/root/chroot-setup.sh || true
 
 # ------------------------------------------------------------------------------
 # 11. CREATE SECONDARY LUKS (5 GB) FOR MANUAL MOUNT
 # ------------------------------------------------------------------------------
 info "Creating secondary LUKS on lv_secret..."
 echo "$PASSWORD" | cryptsetup luksFormat /dev/myvg/lv_secret -
-# This container remains manual; not auto-mounted.
 
 # ------------------------------------------------------------------------------
 # DONE
 # ------------------------------------------------------------------------------
 info "Installation complete! Unmount, reboot, and enjoy your environment."
-
